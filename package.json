@@ -19,6 +19,20 @@
     "prettier": "^2.6.2",
     "tslib": "^2.3.0",
     "tsx": "^4.19.0",
-    "typescript": "~5.9.2"
+    "typescript": "~5.9.2",
+    "verdaccio": "^6.0.5"
+  },
+  "nx": {
+    "includedScripts": [],
+    "targets": {
+      "local-registry": {
+        "executor": "@nx/js:verdaccio",
+        "options": {
+          "port": 4873,
+          "config": ".verdaccio/config.yml",
+          "storage": "tmp/local-registry/storage"
+        }
+      }
+    }
   }
 }
