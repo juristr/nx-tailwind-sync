@@ -1,6 +1,6 @@
-# tailwind-sync-plugin
+# Nx Tailwind Sync
 
-Nx sync generator that auto-manages `@source` directives in CSS files for Tailwind v4 monorepos.
+Nx [sync generator](https://nx.dev/docs/concepts/sync-generators) that auto-manages `@source` directives in CSS files for Tailwind v4 monorepos.
 
 ## Problem
 
