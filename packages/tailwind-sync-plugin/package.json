@@ -1,9 +1,12 @@
 {
   "name": "@juristr/nx-tailwind-sync",
   "version": "0.0.1",
-  "repository": "https://github.com/juristr/nx-tailwind-sync",
+  "author": "Juri Strumpflohner",
   "license": "MIT",
-  "author": "Juri Strumpflohner - @juristr",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/juristr/tusky-design.git"
+  },
   "main": "./dist/index.js",
   "module": "./dist/index.js",
   "types": "./dist/index.d.ts",
