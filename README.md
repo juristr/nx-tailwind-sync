@@ -4,7 +4,7 @@ Nx [sync generator](https://nx.dev/docs/concepts/sync-generators) that auto-mana
 
 ## Problem
 
-Tailwind v4 requires `@source` directives for dependencies outside the project root. Manually maintaining these in a monorepo is error-prone.
+Tailwind v4 [requires `@source` directives](https://tailwindcss.com/docs/detecting-classes-in-source-files) for dependencies outside the project root. Manually maintaining these in a monorepo is error-prone. See [this blog post](https://nx.dev/blog/setup-tailwind-4-npm-workspace) for more background.
 
 ## Solution
 
