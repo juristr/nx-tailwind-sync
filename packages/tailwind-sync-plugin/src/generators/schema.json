@@ -1,0 +1,13 @@
+{
+  "$schema": "https://json-schema.org/schema",
+  "$id": "UpdateTailwindGlobs",
+  "type": "object",
+  "properties": {
+    "additionalStylePaths": {
+      "type": "array",
+      "items": { "type": "string" },
+      "description": "Additional relative paths (from project root) to search for styles.css files with @import 'tailwindcss'"
+    }
+  },
+  "required": []
+}

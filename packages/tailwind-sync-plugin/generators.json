@@ -1,0 +1,9 @@
+{
+  "generators": {
+    "update-tailwind-globs": {
+      "factory": "./dist/generators/update-tailwind-globs",
+      "schema": "./dist/generators/schema.json",
+      "description": "Nx Sync generator to update @source directives in CSS files for Tailwind v4 monorepos"
+    }
+  }
+}
