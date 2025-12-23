@@ -1,6 +1,9 @@
 {
   "name": "@juristr/nx-tailwind-sync",
   "version": "0.0.1",
+  "repository": "https://github.com/juristr/nx-tailwind-sync",
+  "license": "MIT",
+  "author": "Juri Strumpflohner - @juristr",
   "main": "./dist/index.js",
   "module": "./dist/index.js",
   "types": "./dist/index.d.ts",
@@ -16,7 +19,9 @@
     "targets": {
       "e2e": {
         "executor": "nx:run-commands",
-        "dependsOn": ["build"],
+        "dependsOn": [
+          "build"
+        ],
         "options": {
           "command": "vitest run",
           "cwd": "packages/tailwind-sync-plugin"
