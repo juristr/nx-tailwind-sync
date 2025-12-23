@@ -231,4 +231,54 @@ export default { plugins: [tailwindcss()] };`
     expect(css).toContain('nx-tailwind-sources:start');
     expect(css).toContain(lib);
   });
+
+  it('should add managed block after @import tailwindcss source(none)', () => {
+    const app = uniq('app');
+    const lib = uniq('lib');
+
+    updateFile(
+      `apps/${app}/project.json`,
+      JSON.stringify({
+        name: app,
+        root: `apps/${app}`,
+        sourceRoot: `apps/${app}/src`,
+        implicitDependencies: [lib],
+      })
+    );
+    updateFile(
+      `apps/${app}/src/styles.css`,
+      `@import 'tailwindcss source(none)';
+
+.existing-content { color: red; }`
+    );
+    updateFile(`apps/${app}/src/main.ts`, `console.log('app');`);
+
+    updateFile(
+      `libs/${lib}/project.json`,
+      JSON.stringify({
+        name: lib,
+        root: `libs/${lib}`,
+        sourceRoot: `libs/${lib}/src`,
+      })
+    );
+    updateFile(`libs/${lib}/src/index.ts`, `export const x = 1;`);
+
+    runNxCommand(`g @juristr/nx-tailwind-sync:update-tailwind-globs`, {
+      silenceError: true,
+    });
+
+    const css = readFile(`apps/${app}/src/styles.css`);
+
+    // Verify managed block exists
+    expect(css).toContain('nx-tailwind-sources:start');
+    expect(css).toContain(lib);
+
+    // Verify order: import should come BEFORE managed block
+    const importIndex = css.indexOf("@import 'tailwindcss source(none)'");
+    const managedBlockIndex = css.indexOf('nx-tailwind-sources:start');
+    expect(importIndex).toBeLessThan(managedBlockIndex);
+
+    // Verify existing content is preserved
+    expect(css).toContain('.existing-content { color: red; }');
+  });
 });
