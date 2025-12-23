@@ -3,33 +3,50 @@
   "namedInputs": {
     "default": ["{projectRoot}/**/*", "sharedGlobals"],
     "production": ["default"],
-    "sharedGlobals": []
+    "sharedGlobals": ["{workspaceRoot}/.github/workflows/ci.yml"]
   },
   "targetDefaults": {
     "nx-release-publish": {
-      "options": { "packageRoot": "build/{projectRoot}" }
+      "options": {
+        "packageRoot": "build/{projectRoot}"
+      }
     }
   },
   "release": {
     "projects": ["packages/*"],
     "releaseTagPattern": "v{version}",
     "changelog": {
-      "workspaceChangelog": { "createRelease": "github", "file": false },
+      "workspaceChangelog": {
+        "createRelease": "github",
+        "file": false
+      },
       "projectChangelogs": false,
-      "git": { "commit": false, "stageChanges": false, "tag": false }
+      "git": {
+        "commit": false,
+        "stageChanges": false,
+        "tag": false
+      }
     },
     "version": {
-      "git": { "commit": false, "stageChanges": false, "tag": false },
+      "git": {
+        "commit": false,
+        "stageChanges": false,
+        "tag": false
+      },
       "currentVersionResolver": "registry",
       "manifestRootsToUpdate": ["build/{projectRoot}"],
-      "versionActionsOptions": { "skipLockFileUpdate": true }
+      "versionActionsOptions": {
+        "skipLockFileUpdate": true
+      }
     }
   },
   "plugins": [
     {
       "plugin": "@nx/js/typescript",
       "options": {
-        "typecheck": { "targetName": "typecheck" },
+        "typecheck": {
+          "targetName": "typecheck"
+        },
         "build": {
           "targetName": "build",
           "configName": "tsconfig.lib.json",
