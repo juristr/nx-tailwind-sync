@@ -1,7 +1,6 @@
 {
   "name": "@juristr/nx-tailwind-sync",
   "version": "0.0.1",
-  "private": true,
   "main": "./dist/index.js",
   "module": "./dist/index.js",
   "types": "./dist/index.d.ts",
@@ -21,19 +20,19 @@
           "{options.outputPath}"
         ],
         "options": {
-          "outputPath": "tools/tailwind-sync-plugin/dist",
-          "main": "tools/tailwind-sync-plugin/src/index.ts",
-          "tsConfig": "tools/tailwind-sync-plugin/tsconfig.lib.json",
-          "rootDir": "tools/tailwind-sync-plugin/src",
+          "outputPath": "packages/tailwind-sync-plugin/dist",
+          "main": "packages/tailwind-sync-plugin/src/index.ts",
+          "tsConfig": "packages/tailwind-sync-plugin/tsconfig.lib.json",
+          "rootDir": "packages/tailwind-sync-plugin/src",
           "generatePackageJson": false,
           "assets": [
             {
-              "input": "./tools/tailwind-sync-plugin/src",
+              "input": "./packages/tailwind-sync-plugin/src",
               "glob": "**/!(*.ts)",
               "output": "."
             },
             {
-              "input": "./tools/tailwind-sync-plugin/src",
+              "input": "./packages/tailwind-sync-plugin/src",
               "glob": "**/*.d.ts",
               "output": "."
             }
@@ -51,5 +50,8 @@
     "dist",
     "!**/*.tsbuildinfo",
     "generators.json"
-  ]
+  ],
+  "publishConfig": {
+    "access": "public"
+  }
 }

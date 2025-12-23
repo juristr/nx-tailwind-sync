@@ -1,0 +1,58 @@
+name: publish
+
+on:
+  release:
+    types: [published]
+
+  workflow_dispatch:
+
+env:
+  NX_VERBOSE_LOGGING: true
+
+jobs:
+  publish:
+    if: github.repository == 'juristr/nx-tailwind-sync'
+    name: Publish to npm
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      id-token: write
+    env:
+      NPM_CONFIG_PROVENANCE: true
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Install pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 10.12.1
+
+      - name: Install Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          registry-url: https://registry.npmjs.org/
+          cache: pnpm
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Build
+        run: pnpm nx run-many -t build
+
+      - name: Resolve version
+        id: version
+        run: |
+          if [ "${{ github.event_name }}" = "release" ]; then
+            echo "version=${{ github.event.release.tag_name }}" >> $GITHUB_OUTPUT
+            echo "dry_run=" >> $GITHUB_OUTPUT
+          else
+            echo "version=minor" >> $GITHUB_OUTPUT
+            echo "dry_run=--dry-run" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Publish
+        run: pnpm release ${{ steps.version.outputs.version }} ${{ steps.version.outputs.dry_run }}
