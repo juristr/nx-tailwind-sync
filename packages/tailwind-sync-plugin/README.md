@@ -48,7 +48,7 @@ Register the sync generator on tasks that need it (e.g., `build`, `dev`):
   "nx": {
     "targets": {
       "build": {
-        "syncGenerators": ["@aishop/tailwind-sync-plugin:update-tailwind-globs"]
+        "syncGenerators": ["@juristr/nx-tailwind-sync:update-tailwind-globs"]
       }
     }
   }
@@ -70,5 +70,5 @@ pnpm nx sync
 ## Building
 
 ```bash
-nx build tailwind-sync-plugin
+nx build @juristr/nx-tailwind-sync
 ```
