@@ -281,4 +281,109 @@ export default { plugins: [tailwindcss()] };`
     // Verify existing content is preserved
     expect(css).toContain('.existing-content { color: red; }');
   });
+
+  it('should update multiple apps with tailwind in monorepo', () => {
+    const app1 = uniq('app1');
+    const app2 = uniq('app2');
+    const app3 = uniq('app3');
+    const lib1 = uniq('lib1');
+    const lib2 = uniq('lib2');
+    const lib3 = uniq('lib3');
+
+    // Create app1 - uses tailwind, depends on lib1
+    updateFile(
+      `apps/${app1}/project.json`,
+      JSON.stringify({
+        name: app1,
+        root: `apps/${app1}`,
+        sourceRoot: `apps/${app1}/src`,
+        implicitDependencies: [lib1],
+      })
+    );
+    updateFile(`apps/${app1}/src/styles.css`, `@import 'tailwindcss';`);
+    updateFile(`apps/${app1}/src/main.ts`, `console.log('app1');`);
+
+    // Create app2 - uses tailwind, depends on lib2 and lib3
+    updateFile(
+      `apps/${app2}/project.json`,
+      JSON.stringify({
+        name: app2,
+        root: `apps/${app2}`,
+        sourceRoot: `apps/${app2}/src`,
+        implicitDependencies: [lib2, lib3],
+      })
+    );
+    updateFile(`apps/${app2}/src/styles.css`, `@import 'tailwindcss';`);
+    updateFile(`apps/${app2}/src/main.ts`, `console.log('app2');`);
+
+    // Create app3 - no tailwind, has plain CSS
+    updateFile(
+      `apps/${app3}/project.json`,
+      JSON.stringify({
+        name: app3,
+        root: `apps/${app3}`,
+        sourceRoot: `apps/${app3}/src`,
+      })
+    );
+    const app3OriginalCss = `.app3-styles { color: blue; }`;
+    updateFile(`apps/${app3}/src/styles.css`, app3OriginalCss);
+    updateFile(`apps/${app3}/src/main.ts`, `console.log('app3');`);
+
+    // Create libs
+    updateFile(
+      `libs/${lib1}/project.json`,
+      JSON.stringify({
+        name: lib1,
+        root: `libs/${lib1}`,
+        sourceRoot: `libs/${lib1}/src`,
+      })
+    );
+    updateFile(`libs/${lib1}/src/index.ts`, `export const lib1 = 1;`);
+
+    updateFile(
+      `libs/${lib2}/project.json`,
+      JSON.stringify({
+        name: lib2,
+        root: `libs/${lib2}`,
+        sourceRoot: `libs/${lib2}/src`,
+      })
+    );
+    updateFile(`libs/${lib2}/src/index.ts`, `export const lib2 = 2;`);
+
+    updateFile(
+      `libs/${lib3}/project.json`,
+      JSON.stringify({
+        name: lib3,
+        root: `libs/${lib3}`,
+        sourceRoot: `libs/${lib3}/src`,
+      })
+    );
+    updateFile(`libs/${lib3}/src/index.ts`, `export const lib3 = 3;`);
+
+    // Run generator
+    runNxCommand(`g @juristr/nx-tailwind-sync:update-tailwind-globs`, {
+      silenceError: true,
+    });
+
+    // Verify app1 has managed block with lib1
+    const css1 = readFile(`apps/${app1}/src/styles.css`);
+    expect(css1).toContain('nx-tailwind-sources:start');
+    expect(css1).toContain('nx-tailwind-sources:end');
+    expect(css1).toContain(lib1);
+    expect(css1).not.toContain(lib2);
+    expect(css1).not.toContain(lib3);
+
+    // Verify app2 has managed block with lib2 and lib3
+    const css2 = readFile(`apps/${app2}/src/styles.css`);
+    expect(css2).toContain('nx-tailwind-sources:start');
+    expect(css2).toContain('nx-tailwind-sources:end');
+    expect(css2).toContain(lib2);
+    expect(css2).toContain(lib3);
+    expect(css2).not.toContain(lib1);
+
+    // Verify app3 is untouched (no tailwind)
+    const css3 = readFile(`apps/${app3}/src/styles.css`);
+    expect(css3).toBe(app3OriginalCss);
+    expect(css3).not.toContain('nx-tailwind-sources:start');
+  });
 });
