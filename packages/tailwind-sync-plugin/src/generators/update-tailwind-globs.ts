@@ -35,7 +35,7 @@ function findTailwindCssFile(
   for (const relPath of searchPaths) {
     const fullPath = join(projectRoot, relPath);
     const content = tree.read(fullPath)?.toString();
-    if (content?.match(/@import\s+['"]tailwindcss[^'"]*['"]/)) {
+    if (content?.match(/@import\s+['"]tailwindcss[^'"]*['"](\s+source\([^)]*\))?/)) {
       return fullPath;
     }
   }
@@ -216,7 +216,7 @@ function updateSourceDirectives(
   );
 
   // Try to find @import 'tailwindcss' first
-  const tailwindImportRegex = /@import\s+['"]tailwindcss[^'"]*['"];/;
+  const tailwindImportRegex = /@import\s+['"]tailwindcss[^'"]*['"](\s+source\([^)]*\))?;/;
   const tailwindImportMatch = cleanedContent.match(tailwindImportRegex);
 
   // If not found, look for any @import statement
