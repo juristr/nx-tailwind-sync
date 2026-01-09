@@ -1,5 +1,7 @@
 # Nx Tailwind Sync
 
+[![Watch the video](https://img.youtube.com/vi/tg3LnqhNNws/maxresdefault.jpg)](https://youtu.be/tg3LnqhNNws?si=RxUebKl4n1oeAZ0i)
+
 Nx [sync generator](https://nx.dev/docs/concepts/sync-generators) that auto-manages `@source` directives in CSS files for Tailwind v4 monorepos.
 
 ## Problem
@@ -20,6 +22,10 @@ This plugin traverses the Nx project graph and generates `@source` directives fo
 ```
 
 ## Usage
+
+```bash
+npm install @juristr/nx-tailwind-sync -D
+```
 
 ```json
 {
