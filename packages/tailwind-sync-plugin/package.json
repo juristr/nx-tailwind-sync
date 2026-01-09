@@ -5,7 +5,7 @@
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "https://github.com/juristr/tusky-design.git"
+    "url": "https://github.com/juristr/nx-tailwind-sync.git"
   },
   "main": "./dist/index.js",
   "module": "./dist/index.js",
