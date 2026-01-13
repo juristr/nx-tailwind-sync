@@ -32,7 +32,7 @@ npm install @juristr/nx-tailwind-sync -D
   "nx": {
     "targets": {
       "build": {
-        "syncGenerators": ["@juristr/nx-tailwind-sync:update-tailwind-globs"]
+        "syncGenerators": ["@juristr/nx-tailwind-sync:source-directives"]
       }
     }
   }

@@ -9,7 +9,7 @@ import {
   uniq,
 } from '@nx/plugin/testing';
 
-describe('update-tailwind-globs e2e', () => {
+describe('source-directives e2e', () => {
   beforeAll(() => {
     ensureNxProject(
       '@juristr/nx-tailwind-sync',
@@ -55,7 +55,7 @@ describe('update-tailwind-globs e2e', () => {
     updateFile(`libs/${lib}/src/index.ts`, `export const x = 1;`);
 
     // Run the sync generator (silenceError because sync generators have different return format)
-    runNxCommand(`g @juristr/nx-tailwind-sync:update-tailwind-globs`, {
+    runNxCommand(`g @juristr/nx-tailwind-sync:source-directives`, {
       silenceError: true,
     });
 
@@ -107,7 +107,7 @@ describe('update-tailwind-globs e2e', () => {
     updateFile(`libs/${libB}/src/index.ts`, `export const b = 1;`);
 
     // Run generator
-    runNxCommand(`g @juristr/nx-tailwind-sync:update-tailwind-globs`, {
+    runNxCommand(`g @juristr/nx-tailwind-sync:source-directives`, {
       silenceError: true,
     });
 
@@ -131,7 +131,7 @@ describe('update-tailwind-globs e2e', () => {
     updateFile(`apps/${app}/src/styles.css`, `@import 'tailwindcss';`);
     updateFile(`apps/${app}/src/main.ts`, `console.log('app');`);
 
-    runNxCommand(`g @juristr/nx-tailwind-sync:update-tailwind-globs`, {
+    runNxCommand(`g @juristr/nx-tailwind-sync:source-directives`, {
       silenceError: true,
     });
 
@@ -177,7 +177,7 @@ describe('update-tailwind-globs e2e', () => {
     );
     updateFile(`libs/${newLib}/src/index.ts`, `export const x = 1;`);
 
-    runNxCommand(`g @juristr/nx-tailwind-sync:update-tailwind-globs`, {
+    runNxCommand(`g @juristr/nx-tailwind-sync:source-directives`, {
       silenceError: true,
     });
 
@@ -223,7 +223,7 @@ export default { plugins: [tailwindcss()] };`
     );
     updateFile(`libs/${lib}/src/index.ts`, `export const x = 1;`);
 
-    runNxCommand(`g @juristr/nx-tailwind-sync:update-tailwind-globs`, {
+    runNxCommand(`g @juristr/nx-tailwind-sync:source-directives`, {
       silenceError: true,
     });
 
@@ -263,7 +263,7 @@ export default { plugins: [tailwindcss()] };`
     );
     updateFile(`libs/${lib}/src/index.ts`, `export const x = 1;`);
 
-    runNxCommand(`g @juristr/nx-tailwind-sync:update-tailwind-globs`, {
+    runNxCommand(`g @juristr/nx-tailwind-sync:source-directives`, {
       silenceError: true,
     });
 
@@ -313,7 +313,7 @@ export default { plugins: [tailwindcss()] };`
     );
     updateFile(`libs/${lib}/src/index.ts`, `export const x = 1;`);
 
-    runNxCommand(`g @juristr/nx-tailwind-sync:update-tailwind-globs`, {
+    runNxCommand(`g @juristr/nx-tailwind-sync:source-directives`, {
       silenceError: true,
     });
 
@@ -330,6 +330,52 @@ export default { plugins: [tailwindcss()] };`
 
     // Verify existing content is preserved
     expect(css).toContain('.existing-content { color: blue; }');
+  });
+
+  it('should add managed block after import when no trailing newline', () => {
+    const app = uniq('app');
+    const lib = uniq('lib');
+
+    updateFile(
+      `apps/${app}/project.json`,
+      JSON.stringify({
+        name: app,
+        root: `apps/${app}`,
+        sourceRoot: `apps/${app}/src`,
+        implicitDependencies: [lib],
+      })
+    );
+    // CSS file with only import, no trailing newline or content
+    updateFile(
+      `apps/${app}/src/styles.css`,
+      `@import "tailwindcss" source("./app");`
+    );
+    updateFile(`apps/${app}/src/main.ts`, `console.log('app');`);
+
+    updateFile(
+      `libs/${lib}/project.json`,
+      JSON.stringify({
+        name: lib,
+        root: `libs/${lib}`,
+        sourceRoot: `libs/${lib}/src`,
+      })
+    );
+    updateFile(`libs/${lib}/src/index.ts`, `export const x = 1;`);
+
+    runNxCommand(`g @juristr/nx-tailwind-sync:source-directives`, {
+      silenceError: true,
+    });
+
+    const css = readFile(`apps/${app}/src/styles.css`);
+
+    // Verify managed block exists
+    expect(css).toContain('nx-tailwind-sources:start');
+    expect(css).toContain(lib);
+
+    // Verify order: import should come BEFORE managed block
+    const importIndex = css.indexOf('@import "tailwindcss" source("./app")');
+    const managedBlockIndex = css.indexOf('nx-tailwind-sources:start');
+    expect(importIndex).toBeLessThan(managedBlockIndex);
   });
 
   it('should update multiple apps with tailwind in monorepo', () => {
@@ -411,7 +457,7 @@ export default { plugins: [tailwindcss()] };`
     updateFile(`libs/${lib3}/src/index.ts`, `export const lib3 = 3;`);
 
     // Run generator
-    runNxCommand(`g @juristr/nx-tailwind-sync:update-tailwind-globs`, {
+    runNxCommand(`g @juristr/nx-tailwind-sync:source-directives`, {
       silenceError: true,
     });
 
