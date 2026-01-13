@@ -1,7 +1,7 @@
 {
   "generators": {
-    "tailwind-source-directives": {
-      "factory": "./dist/generators/tailwind-source-directives",
+    "source-directives": {
+      "factory": "./dist/generators/source-directives",
       "schema": "./dist/generators/schema.json",
       "description": "Nx Sync generator to update @source directives in CSS files for Tailwind v4 monorepos"
     }
