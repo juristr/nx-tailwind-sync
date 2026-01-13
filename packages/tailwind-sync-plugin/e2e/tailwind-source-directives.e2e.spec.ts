@@ -9,7 +9,7 @@ import {
   uniq,
 } from '@nx/plugin/testing';
 
-describe('update-tailwind-globs e2e', () => {
+describe('tailwind-source-directives e2e', () => {
   beforeAll(() => {
     ensureNxProject(
       '@juristr/nx-tailwind-sync',
@@ -55,7 +55,7 @@ describe('update-tailwind-globs e2e', () => {
     updateFile(`libs/${lib}/src/index.ts`, `export const x = 1;`);
 
     // Run the sync generator (silenceError because sync generators have different return format)
-    runNxCommand(`g @juristr/nx-tailwind-sync:update-tailwind-globs`, {
+    runNxCommand(`g @juristr/nx-tailwind-sync:tailwind-source-directives`, {
       silenceError: true,
     });
 
@@ -107,7 +107,7 @@ describe('update-tailwind-globs e2e', () => {
     updateFile(`libs/${libB}/src/index.ts`, `export const b = 1;`);
 
     // Run generator
-    runNxCommand(`g @juristr/nx-tailwind-sync:update-tailwind-globs`, {
+    runNxCommand(`g @juristr/nx-tailwind-sync:tailwind-source-directives`, {
       silenceError: true,
     });
 
@@ -131,7 +131,7 @@ describe('update-tailwind-globs e2e', () => {
     updateFile(`apps/${app}/src/styles.css`, `@import 'tailwindcss';`);
     updateFile(`apps/${app}/src/main.ts`, `console.log('app');`);
 
-    runNxCommand(`g @juristr/nx-tailwind-sync:update-tailwind-globs`, {
+    runNxCommand(`g @juristr/nx-tailwind-sync:tailwind-source-directives`, {
       silenceError: true,
     });
 
@@ -177,7 +177,7 @@ describe('update-tailwind-globs e2e', () => {
     );
     updateFile(`libs/${newLib}/src/index.ts`, `export const x = 1;`);
 
-    runNxCommand(`g @juristr/nx-tailwind-sync:update-tailwind-globs`, {
+    runNxCommand(`g @juristr/nx-tailwind-sync:tailwind-source-directives`, {
       silenceError: true,
     });
 
@@ -223,7 +223,7 @@ export default { plugins: [tailwindcss()] };`
     );
     updateFile(`libs/${lib}/src/index.ts`, `export const x = 1;`);
 
-    runNxCommand(`g @juristr/nx-tailwind-sync:update-tailwind-globs`, {
+    runNxCommand(`g @juristr/nx-tailwind-sync:tailwind-source-directives`, {
       silenceError: true,
     });
 
@@ -263,7 +263,7 @@ export default { plugins: [tailwindcss()] };`
     );
     updateFile(`libs/${lib}/src/index.ts`, `export const x = 1;`);
 
-    runNxCommand(`g @juristr/nx-tailwind-sync:update-tailwind-globs`, {
+    runNxCommand(`g @juristr/nx-tailwind-sync:tailwind-source-directives`, {
       silenceError: true,
     });
 
@@ -313,7 +313,7 @@ export default { plugins: [tailwindcss()] };`
     );
     updateFile(`libs/${lib}/src/index.ts`, `export const x = 1;`);
 
-    runNxCommand(`g @juristr/nx-tailwind-sync:update-tailwind-globs`, {
+    runNxCommand(`g @juristr/nx-tailwind-sync:tailwind-source-directives`, {
       silenceError: true,
     });
 
@@ -411,7 +411,7 @@ export default { plugins: [tailwindcss()] };`
     updateFile(`libs/${lib3}/src/index.ts`, `export const lib3 = 3;`);
 
     // Run generator
-    runNxCommand(`g @juristr/nx-tailwind-sync:update-tailwind-globs`, {
+    runNxCommand(`g @juristr/nx-tailwind-sync:tailwind-source-directives`, {
       silenceError: true,
     });
 

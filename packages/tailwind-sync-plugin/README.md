@@ -48,7 +48,7 @@ Register the sync generator on tasks that need it (e.g., `build`, `dev`):
   "nx": {
     "targets": {
       "build": {
-        "syncGenerators": ["@juristr/nx-tailwind-sync:update-tailwind-globs"]
+        "syncGenerators": ["@juristr/nx-tailwind-sync:tailwind-source-directives"]
       }
     }
   }
