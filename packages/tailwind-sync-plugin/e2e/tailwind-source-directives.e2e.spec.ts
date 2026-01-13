@@ -332,6 +332,52 @@ export default { plugins: [tailwindcss()] };`
     expect(css).toContain('.existing-content { color: blue; }');
   });
 
+  it('should add managed block after import when no trailing newline', () => {
+    const app = uniq('app');
+    const lib = uniq('lib');
+
+    updateFile(
+      `apps/${app}/project.json`,
+      JSON.stringify({
+        name: app,
+        root: `apps/${app}`,
+        sourceRoot: `apps/${app}/src`,
+        implicitDependencies: [lib],
+      })
+    );
+    // CSS file with only import, no trailing newline or content
+    updateFile(
+      `apps/${app}/src/styles.css`,
+      `@import "tailwindcss" source("./app");`
+    );
+    updateFile(`apps/${app}/src/main.ts`, `console.log('app');`);
+
+    updateFile(
+      `libs/${lib}/project.json`,
+      JSON.stringify({
+        name: lib,
+        root: `libs/${lib}`,
+        sourceRoot: `libs/${lib}/src`,
+      })
+    );
+    updateFile(`libs/${lib}/src/index.ts`, `export const x = 1;`);
+
+    runNxCommand(`g @juristr/nx-tailwind-sync:tailwind-source-directives`, {
+      silenceError: true,
+    });
+
+    const css = readFile(`apps/${app}/src/styles.css`);
+
+    // Verify managed block exists
+    expect(css).toContain('nx-tailwind-sources:start');
+    expect(css).toContain(lib);
+
+    // Verify order: import should come BEFORE managed block
+    const importIndex = css.indexOf('@import "tailwindcss" source("./app")');
+    const managedBlockIndex = css.indexOf('nx-tailwind-sources:start');
+    expect(importIndex).toBeLessThan(managedBlockIndex);
+  });
+
   it('should update multiple apps with tailwind in monorepo', () => {
     const app1 = uniq('app1');
     const app2 = uniq('app2');

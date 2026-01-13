@@ -228,10 +228,19 @@ function updateSourceDirectives(
   let newContent: string;
   if (importMatch && importMatch.index !== undefined) {
     // Insert after the import line
-    const importEndIndex = cleanedContent.indexOf('\n', importMatch.index) + 1;
+    const newlineIndex = cleanedContent.indexOf('\n', importMatch.index);
+    // Handle case where import is last line with no trailing newline
+    const importEndIndex =
+      newlineIndex === -1 ? cleanedContent.length : newlineIndex + 1;
     const beforeImport = cleanedContent.substring(0, importEndIndex);
     const afterImport = cleanedContent.substring(importEndIndex);
-    newContent = beforeImport + '\n' + managedBlock + '\n' + afterImport;
+    newContent =
+      beforeImport +
+      (newlineIndex === -1 ? '\n' : '') +
+      '\n' +
+      managedBlock +
+      '\n' +
+      afterImport;
   } else {
     // No imports found, prepend to file
     newContent = managedBlock + '\n\n' + cleanedContent;
