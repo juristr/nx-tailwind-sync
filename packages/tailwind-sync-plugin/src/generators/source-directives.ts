@@ -170,7 +170,10 @@ function updateSourceDirectives(
     const project = projectGraph.nodes[dep];
     if (project && project.data.root) {
       // Calculate relative path from CSS file directory to dependency root
-      const relativePath = relative(cssDir, project.data.root);
+      const relativePath = relative(cssDir, project.data.root).replace(
+        /\\/g,
+        '/'
+      );
       sourceDirectives.push(`@source "${relativePath}";`);
     }
   });

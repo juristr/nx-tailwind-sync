@@ -65,6 +65,10 @@ describe('source-directives e2e', () => {
     expect(css).toContain('nx-tailwind-sources:end');
     expect(css).toContain(`@source`);
     expect(css).toContain(lib);
+
+    // Verify no backslashes in paths (Windows compatibility, #5)
+    const sourceMatch = css.match(/@source\s+"([^"]+)"/);
+    expect(sourceMatch?.[1]).not.toContain('\\');
   });
 
   it('should add @source for transitive dependencies', () => {
