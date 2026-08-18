@@ -7,6 +7,11 @@
       "type": "array",
       "items": { "type": "string" },
       "description": "Additional relative paths (from project root) to search for styles.css files with @import 'tailwindcss'"
+    },
+    "exclude": {
+      "type": "array",
+      "items": { "type": "string" },
+      "description": "Projects to exclude from generated @source directives. A list of project names, globs, or tags (e.g. ['apps/*', '!apps/legacy', 'tag:scope:core']). Uses the same project matching syntax as Nx (findMatchingProjects)."
     }
   },
   "required": []

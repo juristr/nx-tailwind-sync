@@ -1,12 +1,16 @@
 import {
   Tree,
   createProjectGraphAsync,
+  readNxJson,
   ProjectGraph,
   ProjectGraphProjectNode,
 } from '@nx/devkit';
 import { SyncGeneratorResult } from 'nx/src/utils/sync-generators';
+import { findMatchingProjects } from 'nx/src/utils/find-matching-projects';
 import { join, relative, dirname } from 'path';
 import { UpdateTailwindGlobsGeneratorSchema } from './schema';
+
+const GENERATOR_ID = '@juristr/nx-tailwind-sync:source-directives';
 
 const START_MARKER = '/* nx-tailwind-sources:start */';
 const END_MARKER = '/* nx-tailwind-sources:end */';
@@ -35,7 +39,9 @@ function findTailwindCssFile(
   for (const relPath of searchPaths) {
     const fullPath = join(projectRoot, relPath);
     const content = tree.read(fullPath)?.toString();
-    if (content?.match(/@import\s+['"]tailwindcss[^'"]*['"](\s+source\([^)]*\))?/)) {
+    if (
+      content?.match(/@import\s+['"]tailwindcss[^'"]*['"](\s+source\([^)]*\))?/)
+    ) {
       return fullPath;
     }
   }
@@ -158,7 +164,8 @@ function updateSourceDirectives(
   tree: Tree,
   projectName: string,
   cssFilePath: string,
-  projectGraph: ProjectGraph
+  projectGraph: ProjectGraph,
+  excludedProjects: Set<string>
 ): boolean {
   const dependencies = collectDependencies(projectName, projectGraph);
 
@@ -168,7 +175,7 @@ function updateSourceDirectives(
 
   dependencies.forEach((dep) => {
     const project = projectGraph.nodes[dep];
-    if (project && project.data.root) {
+    if (project && project.data.root && !excludedProjects.has(dep)) {
       // Calculate relative path from CSS file directory to dependency root
       const relativePath = relative(cssDir, project.data.root).replace(
         /\\/g,
@@ -219,7 +226,8 @@ function updateSourceDirectives(
   );
 
   // Try to find @import 'tailwindcss' first
-  const tailwindImportRegex = /@import\s+['"]tailwindcss[^'"]*['"](\s+source\([^)]*\))?;/;
+  const tailwindImportRegex =
+    /@import\s+['"]tailwindcss[^'"]*['"](\s+source\([^)]*\))?;/;
   const tailwindImportMatch = cleanedContent.match(tailwindImportRegex);
 
   // If not found, look for any @import statement
@@ -257,18 +265,63 @@ function escapeRegex(str: string): string {
   return str.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
 }
 
+/**
+ * Resolve generator options. When run as a sync generator (`nx sync`), Nx
+ * invokes the generator without options, so they are read from
+ * `sync.generatorOptions` in nx.json. Options passed directly (`nx g`) win.
+ */
+function resolveOptions(
+  tree: Tree,
+  options: UpdateTailwindGlobsGeneratorSchema
+): UpdateTailwindGlobsGeneratorSchema {
+  const configured = (readNxJson(tree)?.sync?.generatorOptions?.[
+    GENERATOR_ID
+  ] ?? {}) as UpdateTailwindGlobsGeneratorSchema;
+  const resolved = { ...configured, ...options };
+
+  if (
+    resolved.exclude !== undefined &&
+    (!Array.isArray(resolved.exclude) ||
+      resolved.exclude.some((e) => typeof e !== 'string'))
+  ) {
+    throw new Error(
+      `Invalid "exclude" option for ${GENERATOR_ID}: expected an array of strings.`
+    );
+  }
+
+  return resolved;
+}
+
 export async function updateTailwindGlobsGenerator(
   tree: Tree,
   options: UpdateTailwindGlobsGeneratorSchema = {}
 ): Promise<SyncGeneratorResult> {
   const projectGraph = await createProjectGraphAsync();
   const updatedProjects: string[] = [];
+  const resolvedOptions = resolveOptions(tree, options);
+
+  // Resolve exclude patterns (project names, globs, tag:..., !negation) to
+  // project names using Nx's own matching syntax.
+  // Note: spread the array — findMatchingProjects mutates its input.
+  const exclude = resolvedOptions.exclude ?? [];
+  const excludedProjects = new Set(
+    exclude.length > 0
+      ? findMatchingProjects(
+          [...exclude],
+          // cast: this workspace has two nx copies (plugin's @nx/devkit pins an
+          // older nx), so the structurally-identical node types don't unify
+          projectGraph.nodes as unknown as Parameters<
+            typeof findMatchingProjects
+          >[1]
+        )
+      : []
+  );
 
   // Find all Tailwind v4 projects
   const tailwindProjects = findTailwindProjects(
     projectGraph,
     tree,
-    options.additionalStylePaths
+    resolvedOptions.additionalStylePaths
   );
 
   // Update @source directives for each project with a CSS file
@@ -278,7 +331,8 @@ export async function updateTailwindGlobsGenerator(
         tree,
         project.name,
         cssFile,
-        projectGraph
+        projectGraph,
+        excludedProjects
       );
       if (updated) {
         updatedProjects.push(project.name);

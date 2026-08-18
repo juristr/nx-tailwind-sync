@@ -63,9 +63,36 @@ pnpm nx sync
 
 ## Options
 
-| Option                 | Type       | Description                                   |
-| ---------------------- | ---------- | --------------------------------------------- |
-| `additionalStylePaths` | `string[]` | Extra relative paths to search for styles.css |
+| Option                 | Type       | Description                                                |
+| ---------------------- | ---------- | ---------------------------------------------------------- |
+| `additionalStylePaths` | `string[]` | Extra relative paths to search for styles.css              |
+| `exclude`              | `string[]` | Projects whose `@source` directives should not be emitted. |
+
+Configure options in `nx.json` under `sync.generatorOptions` — Nx invokes sync generators without options, so this is where they are read from during `nx sync`:
+
+```json
+{
+  "sync": {
+    "generatorOptions": {
+      "@juristr/nx-tailwind-sync:source-directives": {
+        "exclude": ["tag:scope:server", "apps/*-e2e", "name:legacy-lib"]
+      }
+    }
+  }
+}
+```
+
+### `exclude` syntax
+
+`exclude` uses the same project matching syntax as Nx itself (`nx run-many --exclude`, `targetDefaults`, release groups):
+
+- `my-lib` — project name (also matches name segments and project roots)
+- `name:my-lib` — strict name-only matching
+- `tag:scope:server` — projects with the tag `scope:server` (globs work too: `tag:scope:*`)
+- `apps/*-e2e` — glob matched against names and project roots (`directory:libs/legacy/*` forces root matching)
+- `!pattern` — negation
+
+An excluded project only has its own `@source` directive skipped; its transitive dependencies are still included (they may be reachable through other paths).
 
 ## Building
 
