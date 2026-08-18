@@ -1,4 +1,13 @@
 packages:
-  - "packages/*"
+  - 'packages/*'
 
 autoInstallPeers: true
+
+overrides:
+  minimatch: '>=10.0.0'
+
+allowBuilds:
+  '@swc/core': true
+  esbuild: true
+  nx: true
+  unrs-resolver: true
