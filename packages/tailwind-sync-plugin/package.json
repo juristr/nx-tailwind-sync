@@ -58,8 +58,14 @@
     }
   },
   "dependencies": {
-    "@nx/devkit": "21.1.2",
     "tslib": "^2.3.0"
+  },
+  "peerDependencies": {
+    "@nx/devkit": ">=21.0.0 <24.0.0",
+    "nx": ">=21.0.0 <24.0.0"
+  },
+  "devDependencies": {
+    "@nx/devkit": "23.1.0"
   },
   "generators": "./generators.json",
   "files": [

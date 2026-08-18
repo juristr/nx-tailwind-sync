@@ -1,10 +1,6 @@
-import {
-  Tree,
-  createProjectGraphAsync,
-  ProjectGraph,
-  ProjectGraphProjectNode,
-} from '@nx/devkit';
-import { SyncGeneratorResult } from 'nx/src/utils/sync-generators';
+import { createProjectGraphAsync } from '@nx/devkit';
+import type { Tree, ProjectGraph, ProjectGraphProjectNode } from '@nx/devkit';
+import type { SyncGeneratorResult } from 'nx/src/utils/sync-generators';
 import { join, relative, dirname } from 'path';
 import { UpdateTailwindGlobsGeneratorSchema } from './schema';
 

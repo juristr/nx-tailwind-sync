@@ -10,6 +10,10 @@ Tailwind v4 [requires to define `@source` directives](https://tailwindcss.com/do
 
 This plugin traverses the Nx project graph and generates `@source` directives for all transitive dependencies.
 
+## Compatibility
+
+Works with Nx `>=21 <24`. `nx` and `@nx/devkit` are peer dependencies, so the plugin always runs against the Nx version already installed in your workspace. Upgrading the plugin does not force an Nx upgrade, and vice versa.
+
 ## Detection
 
 A project is detected as using Tailwind v4 if:
